@@ -11,5 +11,5 @@ Solutions of SQL Injection Ninja Testing Labs (http://leettime.net/sqlninja.com/
 (Insert, Update, Delete Injections cannot be solved because of permission problems)
 
 References:
-1.SQL Injection Payload List (https://medium.com/@ismailtasdelen/sql-injection-payload-list-b97656cfd66b)
-2.Tutorials of SecurityIdiot (http://securityidiots.com/)
+- SQL Injection Payload List (https://medium.com/@ismailtasdelen/sql-injection-payload-list-b97656cfd66b)
+- Tutorials of SecurityIdiot (http://securityidiots.com/)
