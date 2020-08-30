@@ -1,0 +1,13 @@
+Solutions of Basic Injection challenge (SQL Ninja):
+
+Basic Injection:
+#1.
+#2.
+#3.
+#4.
+
+Death Row Injection:
+#1.
+#2.
+#3.
+#4.

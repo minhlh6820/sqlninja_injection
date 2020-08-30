@@ -1,0 +1,6 @@
+Solutions of XPath Injections challenge (SQL Ninja):
+
+#1.
+#2.
+#3.
+#4.

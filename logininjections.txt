@@ -1,0 +1,19 @@
+Solutions of Login Injections challenge:
+
+Error Based Injection:
+#1.
+#2.
+#3.
+#4.
+
+XPath & Dual Injection:
+#1.
+#2.
+#3.
+#4.
+
+Blind Injection:
+#1.
+#2.
+#3.
+#4.
